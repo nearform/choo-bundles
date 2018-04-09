@@ -1,6 +1,6 @@
 {
   "name": "choo-bundles",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Bundle splitting with HTTP2 push support for Choo with choo-ssr",
   "homepage": "https://github.com/nearform/choo-bundles",
   "main": "index.js",
