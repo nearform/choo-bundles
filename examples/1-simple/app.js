@@ -1,12 +1,13 @@
 const choo = require('choo')
 const ssr = require('choo-ssr')
+const async = require('choo-async')
 const bundles = require('choo-bundles')
 
 const home = require('./views/home')
 const notfound = require('./views/notfound')
 
 function main () {
-  const app = choo()
+  const app = async(choo())
 
   const page = view => (
     ssr.html(

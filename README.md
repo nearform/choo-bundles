@@ -2,6 +2,8 @@
 
 Bundle splitting with HTTP2 push support for [`choo-ssr`](https://github.com/nearform/choo-ssr) (server-side rendering with Choo).
 
+Requires [choo-async](https://github.com/nearform/choo-async).
+
 Lazy load the parts of your app that are not immediately used, to make the
 initial load faster.
 
@@ -30,13 +32,14 @@ This plugin exposes a `load` function on a `bundles` object in the Choo instance
 // app.js
 const choo = require('choo')
 const ssr = require('choo-ssr')
+const async = require('choo-async')
 const bundles = require('choo-bundles')
 
 const home = require('./views/home')
 const notfound = require('./views/notfound')
 
 function main () {
-  const app = choo()
+  const app = async(choo())
 
   const page = view => (
     ssr.html(

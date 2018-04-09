@@ -1,8 +1,9 @@
-var h = require('choo/html')
+var h = require('choo-async/html')
 var assert = require('assert')
 
 function factory (impl) {
   return function bundles (state, emitter, app) {
+    assert.equal(state.async, true, 'choo-async decorator is required')
     assert.equal(state.ssr, true, 'choo-ssr plugin is required')
 
     state.bundles = state.bundles || {
