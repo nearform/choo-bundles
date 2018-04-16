@@ -1,6 +1,8 @@
 var h = require('choo-async/html')
 var assert = require('assert')
 
+var isBrowser = typeof window !== 'undefined'
+
 function factory (impl) {
   return function bundles (state, emitter, app) {
     assert.equal(state.async, true, 'choo-async decorator is required')
@@ -42,7 +44,7 @@ function script (id, url) {
 }
 
 function stylesheet (id, url) {
-  return h`<link data-id=${id} href=${url} rel="stylesheet">`
+  return h`<link data-id=${id} href=${url} rel="stylesheet" media="${isBrowser ? 'all' : 'none'}">`
 }
 
 module.exports.factory = factory
