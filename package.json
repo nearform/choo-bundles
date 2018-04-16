@@ -44,6 +44,7 @@
     "fastify": "^1.2.1",
     "fastify-static": "^0.9.0",
     "flush-write-stream": "^1.0.2",
+    "inline-critical-css": "^1.2.1",
     "labeled-stream-splicer": "^2.0.0",
     "mime": "^2.2.0",
     "object-delete-value": "^1.0.0",
