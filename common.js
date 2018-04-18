@@ -30,6 +30,15 @@ function factory (impl) {
   }
 }
 
+function preloads () {
+  return (state, emit) => {
+    var bundles = state.bundles.loaded
+    var js = bundles.map(bundle => preload(bundle.js, 'script'))
+    var css = bundles.filter(bundle => bundle.css).map(bundle => preload(bundle.css, 'style'))
+    return h`${[ ...js, ...css ]}`
+  }
+}
+
 function assets () {
   return (state, emit) => {
     var bundles = state.bundles.loaded
@@ -37,6 +46,10 @@ function assets () {
     var css = bundles.filter(bundle => bundle.css).map(bundle => stylesheet(bundle.id, bundle.css))
     return h`${[ ...js, ...css ]}`
   }
+}
+
+function preload (url, type) {
+  return h`<link rel="preload" href=${url} as=${type}>`
 }
 
 function script (id, url) {
@@ -49,5 +62,6 @@ function stylesheet (id, url) {
 
 module.exports.factory = factory
 module.exports.assets = assets
+module.exports.preloads = preloads
 module.exports.script = script
 module.exports.stylesheet = stylesheet

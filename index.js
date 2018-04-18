@@ -20,3 +20,4 @@ function bundles () {
 
 module.exports = bundles
 module.exports.assets = common.assets
+module.exports.preloads = common.preloads

@@ -52,4 +52,5 @@ function _loaded (url, result) {
 
 module.exports = bundles
 module.exports.assets = common.assets
+module.exports.preloads = common.preloads
 module.exports._loaded = _loaded
