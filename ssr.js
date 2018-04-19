@@ -1,6 +1,6 @@
 const fs = require('fs')
 const path = require('path')
-// const mime = require('mime')
+const mime = require('mime')
 const inline = require('inline-critical-css')
 
 function plugin (options) {
@@ -12,27 +12,22 @@ function plugin (options) {
   var manifest = typeof options.manifest === 'string' ? require(options.manifest) : options.manifest
 
   // The files are pushed to stream here
-  // async function push (stream, basename) {
-  //   const { HTTP2_HEADER_PATH } = require('http2').constants
-  //   const filepath = path.join(options.public, basename)
-  //   const file = getFile(filepath)
-  //   if (!file) {
-  //     throw new Error(`file ${filepath} not found`)
-  //   }
+  function push (stream, basename) {
+    const { HTTP2_HEADER_PATH } = require('http2').constants
+    const filepath = path.join(options.public, basename)
+    const file = getFile(filepath)
+    if (!file) {
+      throw new Error(`file ${filepath} not found`)
+    }
 
-  //   const headers = { [HTTP2_HEADER_PATH]: basename }
+    const headers = { [HTTP2_HEADER_PATH]: basename }
 
-  //   await new Promise((resolve, reject) => {
-  //     stream.pushStream(headers, (err, push) => {
-  //       if (err) {
-  //         reject(err)
-  //         return
-  //       }
-  //       push.respondWithFD(file.content, file.headers)
-  //       resolve()
-  //     })
-  //   })
-  // }
+    stream.pushStream(headers, (err, push) => {
+      if (err) return
+      console.log('PUSED')
+      push.respondWithFD(file.content, file.headers)
+    })
+  }
 
   function getPublicFile (basename) {
     return new Promise((resolve, reject) => {
@@ -53,13 +48,12 @@ function plugin (options) {
     return inline(css)
   }
 
-  // async function pushHTTP2 (bundles, reply) {
-  //   if (options.http2 && reply.res.stream) {
-  //     const js = bundles.map(bundle => push(reply.res.stream, bundle.js))
-  //     const css = bundles.filter(bundle => bundle.css).map(bundle => push(reply.res.stream, bundle.css))
-  //     await Promise.all([ ...js, ...css ])
-  //   }
-  // }
+  function pushHTTP2 (bundles, stream) {
+    if (options.http2push && stream) {
+      bundles.forEach(bundle => push(stream, bundle.js))
+      bundles.filter(bundle => bundle.css).forEach(bundle => push(stream, bundle.css))
+    }
+  }
 
   return {
     async pre (state) {
@@ -74,31 +68,29 @@ function plugin (options) {
         }
       })
     },
-    async post (state, reply) {
+    async post (state, request, reply) {
       const bundles = state.bundles.loaded
-      const [ stream ] = await Promise.all([
-        inlineCSS(bundles)
-        // pushHTTP2(bundles, reply)
-      ])
+      pushHTTP2(bundles, request.raw.stream)
+      const stream = await inlineCSS(bundles)
       return stream
     }
   }
 }
 
-// function getFile (filepath) {
-//   try {
-//     const content = fs.openSync(filepath, 'r')
-//     const contentType = mime.getType(filepath)
-//     return {
-//       content,
-//       headers: {
-//         'content-type': contentType
-//       }
-//     }
-//   } catch (e) {
-//     console.log(e)
-//     return null
-//   }
-// }
+function getFile (filepath) {
+  try {
+    const content = fs.openSync(filepath, 'r')
+    const contentType = mime.getType(filepath)
+    return {
+      content,
+      headers: {
+        'content-type': contentType
+      }
+    }
+  } catch (e) {
+    console.log(e)
+    return null
+  }
+}
 
 module.exports = plugin
