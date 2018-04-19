@@ -31,13 +31,21 @@ function load (bundle) {
     var css = common.stylesheet(bundle.id, bundle.css)
     var links = document.head.getElementsByTagName('link')
     var csssibelings = Array.prototype.filter.call(links, function (link) { return link.dataset.id > bundle.id })
-    document.head.insertBefore(css, csssibelings[0])
+    if (csssibelings.length > 0) {
+      document.head.insertBefore(css, csssibelings[0])
+    } else {
+      document.head.insertBefore(css, links[links.length - 1].nextSibling)
+    }
   }
 
   var js = common.script(bundle.id, bundle.js)
   var scripts = document.head.getElementsByTagName('script')
   var jssibelings = Array.prototype.filter.call(scripts, function (script) { return script.dataset.id > bundle.id })
-  document.head.insertBefore(js, jssibelings[0])
+  if (jssibelings.length > 0) {
+    document.head.insertBefore(js, jssibelings[0])
+  } else {
+    document.head.insertBefore(js, scripts[scripts.length - 1].nextSibling)
+  }
 
   return _bundles[url].promise
 }
